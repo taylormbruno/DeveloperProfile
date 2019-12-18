@@ -170,8 +170,7 @@ function generateHTML(data) {
             zoom: .75; 
           } 
          }
-      </style>
-      <body>
-      </body>
-      </html>`
-        }
+      </style>`
+}
+
+module.exports = generateHTML;
