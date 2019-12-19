@@ -10,7 +10,7 @@ const markdown = require("markdown");
 async function init() {
     try {
         // prompt user for information
-        await inquirer.prompt([
+       const userData = await inquirer.prompt([
             {
                 type: "input",
                 name: "username",
@@ -21,23 +21,17 @@ async function init() {
                 name: "color",
                 message: "What is your favorite color?"
             }
-        ]).then( function(username, color) {
+        ]);
+        const { username, color } = userData;
             console.log(color);
             console.log(username);
+            const userColor = color;
             const queryUrl = `https://api.github.com/users/${username}`;
-            axios.get(queryUrl).then(function (data, color) {
-                console.log(data);
-                console.log(color);
-                const filename = `${data.login}.md`;
-                markdown = `<span style="color:${color}">${user.name}</span>
-                <img src="${data.avatar_url}" height="100px" alt="GitHubImg"/>
-                Bio: ${data.bio}
-                Company: ${data.company}
-                Repo URL: ${data.repos_url}
-                Public Repos: ${data.public_repos}
-                Followers: ${data.followers}
-                Following: ${data.following}
-                Location: ${data.location}`;
+            await axios.get(queryUrl).then(function (response) {
+                console.log(userColor);
+                const userInfo = response.data;
+                const filename = `${userInfo.login}.md`;
+                const markdown = generateMD(userInfo, userColor);
                 fs.writeFile(filename, markdown, (err) => {
                     if (err) {
                         return console.log(err);
@@ -45,7 +39,6 @@ async function init() {
                     console.log("Complete!");
                 });
             });
-        });
     } catch (err) {
         console.log(err);
     }
@@ -53,25 +46,15 @@ async function init() {
 
 init();
 
-
-// axios.get(queryUrl).then((data) => {
-//     markdown = generateMD(data, color);
-//     fs.writeFile(`${data.login}.md`, markdown, (err) => {
-//         if (err) {
-//             return reject(err);
-//         }
-//         console.log("Created Markdown");
-//     });
-// });
-
-function generateMD(data, color) {
-    markdown = `<span style="color:${color}">${user.name}</span>
-    <img src="${data.avatar_url}" height="100px" alt="GitHubImg"/>
-    Bio: ${data.bio}
-    Company: ${data.company}
-    Repo URL: ${data.repos_url}
-    Public Repos: ${data.public_repos}
-    Followers: ${data.followers}
-    Following: ${data.following}
-    Location: ${data.location}`;
+function generateMD(userInfo, userColor) {
+    console.log(userColor);
+    return `# <span style="color:${userColor}">${userInfo.name}</span>   
+<img src="${userInfo.avatar_url}" height="100px" alt="GitHubImg"> <br>  
+Bio: ${userInfo.bio}   
+Company: ${userInfo.company}   
+Repo URL: ${userInfo.repos_url}   
+Public Repos: ${userInfo.public_repos}   
+Followers: ${userInfo.followers}   
+Following: ${userInfo.following}   
+Location: ${userInfo.location}`;
 }
