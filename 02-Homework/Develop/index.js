@@ -5,8 +5,6 @@ const inquirer = require("inquirer");
 const util = require("util");
 // const markdown = require("markdown");
 const generateHTML = require("./generateHTML");
-const HTML5ToPDF = require("../lib");
-const path = require("path");
 
 
 // try combining all functions to avoid prompt error. markdown in seperate function
