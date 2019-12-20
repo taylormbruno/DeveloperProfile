@@ -5,6 +5,7 @@ const inquirer = require("inquirer");
 const util = require("util");
 // const markdown = require("markdown");
 const generateHTML = require("./generateHTML");
+var pdf = require('html-pdf');
 
 
 // try combining all functions to avoid prompt error. markdown in seperate function
@@ -39,13 +40,20 @@ async function init() {
         const filename = `${userInfo.login}.html`;
         const gitStars = await axios.get(queryUrl2);
         const stars = gitStars.data[0].stargazers_count;
-        const html = generateHTML(data, userInfo, stars);
+        const genHTML = generateHTML(data, userInfo, stars);
         // const markdown = generateMD(userInfo, userColor);
-        fs.writeFile(filename, html, (err) => {
+        fs.writeFile(filename, genHTML, (err) => {
             if (err) {
                 return console.log(err);
             }
             console.log("HTML Complete!");
+        });
+        let html = fs.readFileSync(filename, 'utf8');
+        let options = { format: 'Letter', orientation: 'portrait' };
+
+        pdf.create(html, options).toFile(`${userInfo}.pdf`, function(err, res) {
+            if (err) return console.log(err);
+            console.log(res);
         });
 
     } catch (err) {
